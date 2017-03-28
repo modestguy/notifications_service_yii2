@@ -1,53 +1,55 @@
-**Сервис "Уведомления"** для Yii2
+**"Notifications" service** for Yii2 projects
 
-Установка:
-скопировать папку notifications в @app/services/notifications
+Installation:
+copy 'notifications' folder to @app/services/notifications
 
-В файл web/index.php добавить код автолодинга:
+Add these lines to web/index.php:
+
 
     require(__DIR__ . '/../services/notifications/NotificationAutoloader.php');
     \app\services\notifications\NotificationAutoloader::init(\Yii::$container);
 
-Сервис позволяет отправлять уведомлени для любой модели, главное, чтобы модель имплементировала
- интерфейс INotification и имела реализацию функций.
+Service allows to send notifications for any model, but model must implements INotification
+and have a realizations of all methods.
 
-Например, у вас есть модель News (новость):
+For example, we have a News model:
   
   class News extends ActiveRecord {
   }
   
-Имплементим интерфейс и пишем реализацию функций:
+Implements interface and write realization for all methods:
   
     // наша модель 
     class News extends ActiveRecord implements INotification {
         
-        // тело письма
+        // mail body
         public function getBody()
         {
             return $this->news_data;
         }
     
-        // от кого письмо 
+        // from
         public function getFrom()
         {
             return $this->your_field;
         }
     
-        // тема письма
+        // subject
         public function getSubject()
         {
             return 'Уведомление о новой новости';
         }
     
-        // кому отправляем письмо
+        // to
         public function getTo()
         {
             return 'test@test.com';
         }
   }
 
-Далее необходимо в экшне любого контроллера получить сервис отсылки. 
-Задать нотификатор и передать нашу модель.
+And than, we get notification service in any controller action. 
+Setting notificator and send our model.
+
  
          $newsInstance = new News();
          ...   
@@ -55,3 +57,5 @@
          $notificationService = yii::$container->get('NotificationService');
          $notificationService->pushNotifier(yii::$container->get('MailNotifier'));
          $notificationService->notify($newsInstance);
+         
+Enjoy! Sorry for my english.         
